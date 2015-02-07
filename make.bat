@@ -1,0 +1,1 @@
+copy src\*.rb script.rb
