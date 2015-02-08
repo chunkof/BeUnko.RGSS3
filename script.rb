@@ -1,3 +1,91 @@
+#==============================================================================
+# ■ DataManager
+#------------------------------------------------------------------------------
+# 　データベースとゲームオブジェクトを管理するモジュールです。ゲームで使用する
+# ほぼ全てのグローバル変数はこのモジュールで初期化されます。
+#==============================================================================
+
+module DataManager
+  #--------------------------------------------------------------------------
+  # ● データ内の文字列書換
+  #--------------------------------------------------------------------------
+  def self.rewrite_strings_to_unko(data)
+    if data.nil? then
+      return
+    end
+    if data.respond_to?(:name)          then data.name         = "うんこ" end
+    if data.respond_to?(:nickname)      then data.nickname     = "うんこ" end
+    if data.respond_to?(:message1)      then data.message1     = BeUnko::string(data.message1) end
+    if data.respond_to?(:message2)      then data.message2     = BeUnko::string(data.message2) end
+    if data.respond_to?(:message3)      then data.message3     = BeUnko::string(data.message3) end
+    if data.respond_to?(:message4)      then data.message4     = BeUnko::string(data.message4) end
+    if data.respond_to?(:description)   then data.description  = BeUnko::string(data.description) end
+    data
+  end
+  #--------------------------------------------------------------------------
+  # ● 通常のデータベースをロード
+  #--------------------------------------------------------------------------
+  class << self
+    alias :beunko_datamanager_load_normal_database :load_normal_database unless method_defined?(:beunko_datamanager_load_normal_database)
+  end
+  def self.load_normal_database
+    beunko_datamanager_load_normal_database()
+    $data_system.game_title = "うんこ"
+    $data_actors.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_classes.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_skills.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_items.map!       {|data| rewrite_strings_to_unko(data)}
+    $data_weapons.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_armors.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_enemies.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_states.map!      {|data| rewrite_strings_to_unko(data)}
+  end
+  #--------------------------------------------------------------------------
+  # ● 戦闘テスト用のデータベースをロード
+  #--------------------------------------------------------------------------
+  def self.load_battle_test_database
+    $data_actors.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_classes.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_skills.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_items.map!       {|data| rewrite_strings_to_unko(data)}
+    $data_weapons.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_armors.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_enemies.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_states.map!      {|data| rewrite_strings_to_unko(data)}
+  end
+end
+
+#==============================================================================
+# ■ Game_Troop
+#------------------------------------------------------------------------------
+# 　敵グループおよび戦闘に関するデータを扱うクラスです。バトルイベントの処理も
+# 行います。このクラスのインスタンスは $game_troop で参照されます。
+#==============================================================================
+class Game_Troop < Game_Unit
+  #--------------------------------------------------------------------------
+  # ● 敵キャラ名の後ろにつける文字の表
+  #--------------------------------------------------------------------------
+  LETTER_TABLE_HALF = [' U',' N',' K',' O',' B',' U',' R',' I']
+  LETTER_TABLE_FULL = ['Ｕ','Ｎ','Ｋ','Ｏ','Ｂ','Ｕ','Ｒ','Ｉ']
+end
+
+#==============================================================================
+# ■ Game_Map
+#------------------------------------------------------------------------------
+# 　マップを扱うクラスです。スクロールや通行可能判定などの機能を持っています。
+# このクラスのインスタンスは $game_map で参照されます。
+#==============================================================================
+class Game_Map
+  #--------------------------------------------------------------------------
+  # ● 表示名の取得
+  #--------------------------------------------------------------------------
+  def display_name
+    "うんこ"
+  end
+end
+
+# coding: utf-8
+
 module BeUnko
   #-------------------
   # Utility
@@ -16,6 +104,9 @@ module BeUnko
   # convert string
   #
   def string(org)
+    if false == org.kind_of?(String) then
+      return org
+    end
     serial = 0;
     last_type = '-'
     result = ""
@@ -60,13 +151,19 @@ module BeUnko
         ch = '糞'
         last_type = 'kanji'
       # アルファベット
-      elsif /[a-zA-Z]/ =~ ch then
-        # 小文字
+      elsif /[a-zａ-ｚA-ZＡ-Ｚ]/ =~ ch then
+        # 小文字(半角)
         if /[a-z]/ =~ ch then
           replace = ['u','n','k','o']
-        # 大文字
-        else
+        # 小文字(全角)
+        elsif /[ａ-ｚ]/ =~ ch then
+          replace = ['ｕ','ｎ','ｋ','ｏ']
+        # 大文字(半角)
+        elsif /[A-z]/ =~ ch then
           replace = ['U','N','K','O']
+        # 大文字(全角)
+        else
+          replace = ['Ｕ','Ｎ','Ｋ','Ｏ']
         end
         serial = ('alpha'==last_type) ? max_stop(serial+1,replace.length-1) : 0;
         ch = replace[serial]
@@ -74,6 +171,10 @@ module BeUnko
       # 継続
       elsif /[ー―～・]/ =~ ch then
         # last_type更新しない
+      # 継続(半角スペースに変換)
+      elsif /[ﾟﾞ]/ =~ ch then
+        # last_type更新しない
+        ch = " "
       # その他
       else
         last_type = '-'
@@ -211,97 +312,6 @@ module Vocab
   #--------------------------------------------------------------------------
 end
 #==============================================================================
-# ■ DataManager
-#------------------------------------------------------------------------------
-# 　データベースとゲームオブジェクトを管理するモジュールです。ゲームで使用する
-# ほぼ全てのグローバル変数はこのモジュールで初期化されます。
-#==============================================================================
-
-module DataManager
-  #--------------------------------------------------------------------------
-  # ● 通常のデータベースをロード
-  #--------------------------------------------------------------------------
-  def self.rename_to_unko(data)
-    if data.nil? then
-      return
-    end
-    if data.respond_to?(:name)         then data.name        = "うんこ" end
-    if data.respond_to?(:nickname)     then data.nickname    = "うんこ" end
-    data
-  end
-  class << self
-    alias :beunko_datamanager_load_normal_database :load_normal_database unless method_defined?(:beunko_datamanager_load_normal_database)
-  end
-  def self.load_normal_database
-    beunko_datamanager_load_normal_database()
-    $data_actors.map!  {|data| rename_to_unko(data)}
-    $data_classes.map! {|data| rename_to_unko(data)}
-
-  end
-  #--------------------------------------------------------------------------
-  # ● 戦闘テスト用のデータベースをロード
-  #--------------------------------------------------------------------------
-  def self.load_battle_test_database
-    $data_actors        = load_data("Data/BT_Actors.rvdata2")
-    $data_classes       = load_data("Data/BT_Classes.rvdata2")
-    $data_skills        = load_data("Data/BT_Skills.rvdata2")
-    $data_items         = load_data("Data/BT_Items.rvdata2")
-    $data_weapons       = load_data("Data/BT_Weapons.rvdata2")
-    $data_armors        = load_data("Data/BT_Armors.rvdata2")
-    $data_enemies       = load_data("Data/BT_Enemies.rvdata2")
-    $data_states        = load_data("Data/BT_States.rvdata2")
-  end
-end
-
-#==============================================================================
-# ■ Game_Actor
-#------------------------------------------------------------------------------
-# 　アクターを扱うクラスです。このクラスは Game_Actors クラス（$game_actors）
-# の内部で使用され、Game_Party クラス（$game_party）からも参照されます。
-#==============================================================================
-class Game_Actor < Game_Battler
-  #--------------------------------------------------------------------------
-  # ● セットアップ
-  #--------------------------------------------------------------------------
-  alias beunko_game_actor_setup setup
-  def setup(actor_id)
-    beunko_game_actor_setup(actor_id)
-    @name = "うんこ"
-    @nickname = "うんこ"
-  end
-end
-
-#==============================================================================
-# ■ Game_Enemy
-#------------------------------------------------------------------------------
-# 　敵キャラを扱うクラスです。このクラスは Game_Troop クラス（$game_troop）の
-# 内部で使用されます。
-#==============================================================================
-class Game_Enemy < Game_Battler
-  #--------------------------------------------------------------------------
-  # ● オブジェクト初期化
-  #--------------------------------------------------------------------------
-  alias beunko_game_enemy_initialize initialize
-  def initialize(index, enemy_id)
-    beunko_game_enemy_initialize(index, enemy_id)
-    @original_name = "うんこ"
-  end
-end
-
-#==============================================================================
-# ■ Game_Troop
-#------------------------------------------------------------------------------
-# 　敵グループおよび戦闘に関するデータを扱うクラスです。バトルイベントの処理も
-# 行います。このクラスのインスタンスは $game_troop で参照されます。
-#==============================================================================
-class Game_Troop < Game_Unit
-  #--------------------------------------------------------------------------
-  # ● 敵キャラ名の後ろにつける文字の表
-  #--------------------------------------------------------------------------
-  LETTER_TABLE_HALF = [' U',' N',' K',' O',' B',' U',' R',' I']
-  LETTER_TABLE_FULL = ['Ｕ','Ｎ','Ｋ','Ｏ','Ｂ','Ｕ','Ｒ','Ｉ']
-end
-#==============================================================================
 # ■ Window_Base
 #------------------------------------------------------------------------------
 # 　ゲーム中の全てのウィンドウのスーパークラスです。
@@ -321,22 +331,4 @@ class Window_Base < Window
   end
 end
 
-#==============================================================================
-# ■ Window_MapName
-#------------------------------------------------------------------------------
-# 　マップ名を表示するウィンドウです。
-#==============================================================================
-
-class Window_MapName < Window_Base
-  #--------------------------------------------------------------------------
-  # ● リフレッシュ
-  #--------------------------------------------------------------------------
-  def refresh
-    contents.clear
-    unless $game_map.display_name.empty?
-      draw_background(contents.rect)
-      draw_text(contents.rect, BeUnko::string($game_map.display_name), 1)
-    end
-  end
-end
 
