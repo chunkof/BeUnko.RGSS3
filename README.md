@@ -2,7 +2,7 @@
 ゲーム(RPGツクールVXAce製)をうんこにします。
 
 ## Usage
-script.rbの内容をRPGツクールVXAceのスクリプトエディタの「▼素材」の下に張り付ける。
+script.rbの内容をRPGツクールVXAceのスクリプトエディタの「▼素材」の下の( ここに追加 )あたりに貼りつける。
 
 ## Sample
 ### message
