@@ -157,6 +157,8 @@ module BeUnko
         ch = '糞'
         last_type = 'kanji'
       # アルファベット
+=begin
+「制御文字列」「モンスター連番」を変換しなよう無効化(暫定)
       elsif /[a-zａ-ｚA-ZＡ-Ｚ]/ =~ ch then
         # 小文字(半角)
         if /[a-z]/ =~ ch then
@@ -174,6 +176,7 @@ module BeUnko
         serial = ('alpha'==last_type) ? max_stop(serial+1,replace.length-1) : 0;
         ch = replace[serial]
         last_type = 'alpha'
+=end
       # 継続
       elsif /[ー―～・]/ =~ ch then
         # last_type更新しない
