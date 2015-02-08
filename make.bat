@@ -1,1 +1,1 @@
-copy src\*.rb script.rb
+copy /b src\*.rb script.rb

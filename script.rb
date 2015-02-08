@@ -336,4 +336,3 @@ class Window_Base < Window
   end
 end
 
-
