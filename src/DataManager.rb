@@ -23,6 +23,23 @@ module DataManager
     data
   end
   #--------------------------------------------------------------------------
+  # ● データベース書換
+  #--------------------------------------------------------------------------
+  def self.rewrite_database_to_unko()
+    $data_system.game_title = "うんこ"
+    $data_system.skill_types.map!  {|type_name| type_name = "うんこ"}
+    $data_system.weapon_types.map! {|type_name| type_name = "うんこ"}
+    $data_system.armor_types.map!  {|type_name| type_name = "うんこ"}
+    $data_actors.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_classes.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_skills.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_items.map!       {|data| rewrite_strings_to_unko(data)}
+    $data_weapons.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_armors.map!      {|data| rewrite_strings_to_unko(data)}
+    $data_enemies.map!     {|data| rewrite_strings_to_unko(data)}
+    $data_states.map!      {|data| rewrite_strings_to_unko(data)}
+  end
+  #--------------------------------------------------------------------------
   # ● 通常のデータベースをロード
   #--------------------------------------------------------------------------
   class << self
@@ -30,33 +47,17 @@ module DataManager
   end
   def self.load_normal_database
     beunko_datamanager_load_normal_database()
-    $data_system.game_title = "うんこ"
-    
-    $data_system.skill_types.map!  {|type_name| type_name = "うんこ"}
-    $data_system.weapon_types.map! {|type_name| type_name = "うんこ"}
-    $data_system.armor_types.map!  {|type_name| type_name = "うんこ"}
-    
-    $data_actors.map!      {|data| rewrite_strings_to_unko(data)}
-    $data_classes.map!     {|data| rewrite_strings_to_unko(data)}
-    $data_skills.map!      {|data| rewrite_strings_to_unko(data)}
-    $data_items.map!       {|data| rewrite_strings_to_unko(data)}
-    $data_weapons.map!     {|data| rewrite_strings_to_unko(data)}
-    $data_armors.map!      {|data| rewrite_strings_to_unko(data)}
-    $data_enemies.map!     {|data| rewrite_strings_to_unko(data)}
-    $data_states.map!      {|data| rewrite_strings_to_unko(data)}
+    rewrite_database_to_unko()
   end
   #--------------------------------------------------------------------------
   # ● 戦闘テスト用のデータベースをロード
   #--------------------------------------------------------------------------
+  class << self
+    alias :beunko_datamanager_load_battle_test_database :load_battle_test_database unless method_defined?(:beunko_datamanager_load_battle_test_database)
+  end
   def self.load_battle_test_database
-    $data_actors.map!      {|data| rewrite_strings_to_unko(data)}
-    $data_classes.map!     {|data| rewrite_strings_to_unko(data)}
-    $data_skills.map!      {|data| rewrite_strings_to_unko(data)}
-    $data_items.map!       {|data| rewrite_strings_to_unko(data)}
-    $data_weapons.map!     {|data| rewrite_strings_to_unko(data)}
-    $data_armors.map!      {|data| rewrite_strings_to_unko(data)}
-    $data_enemies.map!     {|data| rewrite_strings_to_unko(data)}
-    $data_states.map!      {|data| rewrite_strings_to_unko(data)}
+    beunko_datamanager_load_battle_test_database
+    rewrite_database_to_unko()
   end
 end
 
