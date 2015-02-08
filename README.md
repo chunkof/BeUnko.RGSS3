@@ -15,3 +15,8 @@ script.rbの内容をRPGツクールVXAceのスクリプトエディタの「▼
 ![](sample/status_before.png)
 #### after
 ![](sample/status_after.png)
+### battle
+#### before
+![](sample/battle_before.png)
+#### after
+![](sample/battle_after.png)
