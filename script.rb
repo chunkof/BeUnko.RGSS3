@@ -31,6 +31,11 @@ module DataManager
   def self.load_normal_database
     beunko_datamanager_load_normal_database()
     $data_system.game_title = "‚¤‚ñ‚±"
+    
+    $data_system.skill_types.map!  {|type_name| type_name = "‚¤‚ñ‚±"}
+    $data_system.weapon_types.map! {|type_name| type_name = "‚¤‚ñ‚±"}
+    $data_system.armor_types.map!  {|type_name| type_name = "‚¤‚ñ‚±"}
+    
     $data_actors.map!      {|data| rewrite_strings_to_unko(data)}
     $data_classes.map!     {|data| rewrite_strings_to_unko(data)}
     $data_skills.map!      {|data| rewrite_strings_to_unko(data)}
